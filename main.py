@@ -1,5 +1,5 @@
 import logging
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Security
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -10,6 +10,8 @@ from pydantic import BaseModel
 import asyncpg
 from typing import Optional
 import os
+from fastapi.security.api_key import APIKeyHeader
+from starlette.status import HTTP_403_FORBIDDEN
 
 # Configuración básica de logging
 logging.basicConfig(
@@ -23,7 +25,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-DATABASE_URL = "postgresql+asyncpg://postgres:1234@148.241.200.8/transporte"
+DATABASE_URL = "postgresql+asyncpg://postgres:localhost:5234/transporte"
 
 # Configuración de la base de datos
 engine = create_async_engine(DATABASE_URL, echo=True)
@@ -65,14 +67,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Definir el nombre del header donde se enviará la API Key
+API_KEY_NAME = "access_token"
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
+
+# Recuperar la API Key desde las variables de entorno
+API_KEY = os.getenv("API_KEY")
+
+# Función para validar la API Key
+async def get_api_key(api_key_header: str = Security(api_key_header)):
+    if api_key_header == API_KEY:
+        return api_key_header
+    else:
+        raise HTTPException(
+            status_code=HTTP_403_FORBIDDEN, detail="Could not validate API Key"
+        )
+
 # Dependencia para obtener la sesión de la base de datos
 async def get_db():
     async with SessionLocal() as session:
         yield session
 
-# Ruta para obtener todos los datos de la tabla
+# Ruta para obtener todos los datos de la tabla (protegida con API Key)
 @app.get("/conductores/")
-async def read_conductores(skip: int = 0, limit: int = 10, db: AsyncSession = Depends(get_db)):
+async def read_conductores(skip: int = 0, limit: int = 10, db: AsyncSession = Depends(get_db), api_key: str = Depends(get_api_key)):
     try:
         result = await db.execute(select(Conductor).offset(skip).limit(limit))
         conductores = result.scalars().all()
@@ -81,9 +99,9 @@ async def read_conductores(skip: int = 0, limit: int = 10, db: AsyncSession = De
         logger.error(f"Error al obtener conductores: {e}")
         raise HTTPException(status_code=500, detail="Error al obtener los conductores")
 
-# Ruta para actualizar un conductor existente basado en idconductor
+# Ruta para actualizar un conductor existente basado en idconductor (protegida con API Key)
 @app.put("/conductores/{idconductor}")
-async def update_conductor(idconductor: str, conductor_update: ConductorUpdate, db: AsyncSession = Depends(get_db)):
+async def update_conductor(idconductor: str, conductor_update: ConductorUpdate, db: AsyncSession = Depends(get_db), api_key: str = Depends(get_api_key)):
     try:
         # Obtener el conductor por idconductor
         result = await db.execute(select(Conductor).filter(Conductor.idconductor == idconductor))
