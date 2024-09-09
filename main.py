@@ -25,7 +25,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-DATABASE_URL = "postgresql+asyncpg://postgres:localhost:5234/transporte"
+DATABASE_URL = "postgresql+asyncpg://postgres:localhost:5432/transporte"
 
 # Configuración de la base de datos
 engine = create_async_engine(DATABASE_URL, echo=True)
