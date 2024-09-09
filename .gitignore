@@ -2,6 +2,9 @@
 env/
 venv/
 
+#ignorar el archivo de logs
+api_errors.log
+
 # Ignorar archivos de caché de Python
 __pycache__/
 *.pyc
@@ -11,3 +14,4 @@ __pycache__/
 
 # Ignorar otros archivos innecesarios
 .DS_Store
+
