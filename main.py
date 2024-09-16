@@ -28,7 +28,14 @@ logger = logging.getLogger(__name__)
 DATABASE_URL = "postgresql+asyncpg://postgres:1234@148.241.200.8/transporte"
 
 # Configuración de la base de datos
-engine = create_async_engine(DATABASE_URL, echo=True)
+engine = create_async_engine(
+    DATABASE_URL, 
+    echo=True, 
+    pool_size=10,  # Tamaño del pool de conexiones
+    max_overflow=20,  # Número de conexiones adicionales permitidas
+    pool_timeout=30,  # Tiempo de espera en segundos antes de un timeout
+    pool_recycle=1800  # Reciclar conexiones cada 30 minutos
+)
 SessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 Base = declarative_base()
 
@@ -131,6 +138,9 @@ async def update_conductor(idconductor: str, conductor_update: ConductorUpdate, 
 
         return {"msg": "Conductor actualizado con éxito", "conductor": conductor}
 
+    except asyncpg.exceptions.TooManyConnectionsError as e:
+        logger.error(f"Demasiadas conexiones: {e}")
+        raise HTTPException(status_code=500, detail="Demasiadas conexiones a la base de datos")
     except Exception as e:
         logger.error(f"Error al actualizar el conductor {idconductor}: {e}")
         raise HTTPException(status_code=500, detail="Error al actualizar el conductor")
