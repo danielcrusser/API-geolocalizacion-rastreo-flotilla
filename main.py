@@ -42,7 +42,7 @@ SessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=F
 Base = declarative_base()
 
 # Configuración para Google Cloud Storage
-GOOGLE_CLOUD_CREDENTIALS = "/Users/danielcruz/Documents/info_club_bucket.json"
+GOOGLE_CLOUD_CREDENTIALS = "/root/info_club_bucket.json"
 BUCKET_NAME = "info_club"
 
 # Inicializa el cliente de Google Cloud Storage
