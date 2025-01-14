@@ -1,7 +1,7 @@
 # Ignorar el entorno virtual
 env/
 venv/
-
+datos_tableau/
 #ignorar el archivo de logs
 api_errors.log
 
