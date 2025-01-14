@@ -1,0 +1,26 @@
+# Ignorar el entorno virtual
+env/
+venv/
+
+# Ignorar carpetas y archivos específicos
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+
+# Ignorar la carpeta datos_tableau
+datos_tableau/
+
+# Ignorar configuraciones específicas del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Ignorar configuraciones del editor (VSCode, PyCharm, etc.)
+.vscode/
+.idea/
+
+# Ignorar otras configuraciones
+*.swp
