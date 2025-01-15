@@ -14,6 +14,7 @@ from google.cloud import storage
 from fastapi.security.api_key import APIKeyHeader
 from starlette.status import HTTP_403_FORBIDDEN
 from datetime import datetime
+from dotenv import load_dotenv
 
 # Configuración básica de logging
 logging.basicConfig(
@@ -34,7 +35,7 @@ engine = create_async_engine(
     DATABASE_URL, 
     echo=True, 
     pool_size=10,  # Tamaño del pool de conexiones
-    max_overflow=20,  # Número de conexiones adicionales permitidas
+    max_overflow=30,  # Número de conexiones adicionales permitidas
     pool_timeout=30,  # Tiempo de espera en segundos antes de un timeout
     pool_recycle=1800  # Reciclar conexiones cada 30 minutos
 )
@@ -42,7 +43,8 @@ SessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=F
 Base = declarative_base()
 
 # Configuración para Google Cloud Storage
-GOOGLE_CLOUD_CREDENTIALS = "/root/info_club_bucket.json"
+#GOOGLE_CLOUD_CREDENTIALS = "/root/info_club_bucket.json"
+GOOGLE_CLOUD_CREDENTIALS = "/Users/danielcruz/Documents/info_club_bucket.json"
 BUCKET_NAME = "info_club"
 
 # Inicializa el cliente de Google Cloud Storage
@@ -183,6 +185,8 @@ app.add_middleware(
 API_KEY_NAME = "access_token"
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 
+# Cargar las variables de entorno desde el archivo .env
+load_dotenv()
 # Recuperar la API Key desde las variables de entorno
 API_KEY = os.getenv("API_KEY")
 

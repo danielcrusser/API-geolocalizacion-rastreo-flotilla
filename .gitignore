@@ -1,6 +1,7 @@
 # Ignorar el entorno virtual
 env/
 venv/
+.env
 
 # Ignorar carpetas y archivos específicos
 __pycache__/
