@@ -28,6 +28,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 DATABASE_URL = "postgresql+asyncpg://postgres:1234@148.241.200.8/transporte"
+#DATABASE_URL = "postgresql+asyncpg://postgres:1234@localhost/transporte" #BDD LOCAL CON TUNNEL EN CLOUD PARA PG4
 
 # Configuración de la base de datos
 engine = create_async_engine(
@@ -42,8 +43,8 @@ SessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=F
 Base = declarative_base()
 
 # Configuración para Google Cloud Storage
-GOOGLE_CLOUD_CREDENTIALS = "/root/info_club_bucket.json"
-#GOOGLE_CLOUD_CREDENTIALS = "/Users/danielcruz/Documents/info_club_bucket.json"
+#GOOGLE_CLOUD_CREDENTIALS = "/root/info_club_bucket.json"
+GOOGLE_CLOUD_CREDENTIALS = "/Users/danielcruz/Documents/info_club_bucket.json"
 BUCKET_NAME = "info_club"
 
 # Inicializa el cliente de Google Cloud Storage
@@ -118,6 +119,7 @@ class ViajesRealTime(Base):
     fotoconductor = Column(String, nullable=True)
     estado = Column(String, nullable=False)
     inicio_ruta = Column(TIMESTAMP(timezone=True), nullable=True)
+    foto = Column(String, nullable=True)
 
 
 class ViajesRTOut(BaseModel):
@@ -131,6 +133,7 @@ class ViajesRTOut(BaseModel):
     fotoconductor:Optional[str]
     estado: str
     inicio_ruta: Optional[datetime] = None
+    foto: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -185,8 +188,8 @@ API_KEY_NAME = "access_token"
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 
 # Recuperar la API Key desde las variables de entorno
-API_KEY = os.getenv("API_KEY")
-
+#API_KEY = os.getenv("API_KEY")
+API_KEY = "API_TPE_Securyty945763485763hfbfhbiuytrdcvbhjr4er43221110Ay"
 
 # Función para validar la API Key
 async def get_api_key(api_key_header: str = Security(api_key_header)):
@@ -372,7 +375,7 @@ async def update_chofer_status(
 async def get_choferes(
     nombre_apellido: Optional[str] = None,  # Parámetro opcional para buscar por nombre y apellido
     skip: int = 0,  # Paginación: número de registros a saltar
-    limit: int = 10,  # Paginación: número máximo de registros a devolver
+    limit: int = 30,  # Paginación: número máximo de registros a devolver
     db: AsyncSession = Depends(get_db),
     api_key: str = Depends(get_api_key)
 
