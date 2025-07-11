@@ -1,0 +1,81 @@
+# 🚐 API de Monitoreo de Conductores y Rutas en Tiempo Real
+
+Este proyecto es una API construida con **FastAPI** para el monitoreo de conductores, rutas, y viajes en tiempo real. Utiliza PostgreSQL como base de datos, y Google Cloud Storage para el manejo de imágenes. La autenticación se realiza mediante una API Key.
+
+---
+
+## 📦 Tecnologías Utilizadas
+
+- FastAPI
+- PostgreSQL (con `asyncpg` y `SQLAlchemy`)
+- Google Cloud Storage
+- Pydantic
+- CORS Middleware
+- Logging con rotación de archivos
+
+---
+
+## 🔐 Autenticación
+
+Todas las rutas están protegidas mediante una API Key enviada en el header:
+
+
+
+Puedes cambiar la clave directamente en el archivo principal (`main.py`) o usar una variable de entorno para mayor seguridad.
+
+---
+
+## 🛠️ Configuración Inicial
+
+1. **Base de datos PostgreSQL:**
+   - La conexión está configurada para un host externo (`148.241.200.8`) y/o local (`localhost`) en la base de datos `transporte`.
+
+2. **Google Cloud Storage:**
+   - Asegúrate de tener un archivo de credenciales JSON válido.
+   - Configura la ruta en `GOOGLE_CLOUD_CREDENTIALS`.
+   - Asegúrate de que el bucket `info_club` exista y tenga permisos de escritura.
+
+3. **Archivo `back_querys.sql`:**
+   - Este archivo contiene la lógica de registro de viajes. Se encarga de rastrear el inicio y final de una ruta, considerando un radio de **50 metros** para definir el retorno al punto de origen.
+   - Debe ejecutarse en la base de datos bajo el esquema `prueba_transporte`.
+
+---
+
+## 🚀 Cómo Ejecutar
+
+1. Clona el repositorio.
+2. Instala los paquetes necesarios:
+
+```bash
+pip install -r requirements.txt
+
+
+📂 Endpoints Principales
+🔸 Conductores
+GET /conductores/: Lista de conductores.
+
+PUT /conductores/{idconductor}: Actualiza los datos de un conductor.
+
+🔸 Viajes
+GET /viajes/historial/: Obtiene viajes históricos (paginado).
+
+GET /viajes/realtime/: Obtiene datos en tiempo real desde una vista.
+
+🔸 Choferes
+POST /choferes/registrar/: Registra un nuevo chofer con imagen (form-data).
+
+PUT /choferes/{nombre_apellido}/status: Cambia el estado (activo/inactivo) de un chofer.
+
+GET /choferes/: Lista choferes con filtro opcional por nombre.
+
+
+
+ #######    Consideraciones  ########
+El proyecto maneja múltiples conexiones con un pool configurado para alto rendimiento.
+
+Las imágenes subidas de choferes se almacenan en el bucket bajo el prefijo fotos_choferes_bsf/.
+
+Todas las rutas están protegidas por autenticación basada en API Key.
+
+Compatible con despliegues en entornos como GCP, Docker, o servidores locales.
+
