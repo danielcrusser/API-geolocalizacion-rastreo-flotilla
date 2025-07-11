@@ -188,8 +188,7 @@ API_KEY_NAME = "access_token"
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 
 # Recuperar la API Key desde las variables de entorno
-#API_KEY = os.getenv("API_KEY")
-API_KEY = "API_TPE_Securyty945763485763hfbfhbiuytrdcvbhjr4er43221110Ay"
+API_KEY = os.getenv("API_KEY")
 
 # Función para validar la API Key
 async def get_api_key(api_key_header: str = Security(api_key_header)):
